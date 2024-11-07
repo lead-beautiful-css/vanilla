@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIP</title>
+  <style>
+    #player { color: red }
+  </style>
+</head>
+<body>
+  <div id="playerContainer">
+    <div id="player">
+      <h1>Hello PIP</h1>
+      <p><a href="https://youtu.be/lhfU6Z1FvRQ?si=avZS_8UAm5EV5uBX" target="_blank">Persistent pop-out windows, native in-browser, made easy with Chrome's DocumentPictureInPicture</a></p>
+    </div>
+  </div>
+
+  <p><a href="https://caniuse.com/picture-in-picture" target="_blank">caniuse</a></p>
+  <p><a href="https://developer.chrome.com/docs/web-platform/document-picture-in-picture" target="_blank">Docs</a></p>
+
+  <button id="pipButton">Click Me!!</button>
+
+  <script>
+    pipButton.addEventListener('click', async () => {
+      // Open a Picture-in-Picture window.
+      const pipWindow = await documentPictureInPicture.requestWindow()
+
+      // Move the player to the Picture-in-Picture window.
+      pipWindow.document.body.append(player)
+
+      // Copy all style sheets.
+      [...document.styleSheets].forEach((styleSheet) => {
+        try {
+          const cssRules = [...styleSheet.cssRules].map((rule) => rule.cssText).join('');
+          const style = document.createElement('style');
+
+          style.textContent = cssRules;
+          pipWindow.document.head.appendChild(style);
+        } catch (e) {
+          const link = document.createElement('link');
+
+          link.rel = 'stylesheet';
+          link.type = styleSheet.type;
+          link.media = styleSheet.media;
+          link.href = styleSheet.href;
+          pipWindow.document.head.appendChild(link);
+        }
+      })
+
+      // Move the player back when the Picture-in-Picture window closes.
+      pipWindow.addEventListener("pagehide", (event) => {
+        const playerContainer = document.querySelector("#playerContainer")
+        const pipPlayer = event.target.querySelector("#player")
+        playerContainer.append(pipPlayer)
+      })
+    })
+  </script>
+</body>
+</html>
